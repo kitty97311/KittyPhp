@@ -41,7 +41,17 @@ class SalesInformationController {
         
         if (!isset($_GET['id'])) $_GET['id'] = 501;
 
-        echo "edit";
+        $data['product_id'] = $_GET['id'];
+        $data['product'] = $this->model->getProductById($data['product_id']);
+        $data['attribute'] = $this->model->getAttributes(explode(';', $data['product']['variation']));
+        $data['sales_info'] = json_encode($this->model->getSalesInfoById($data['product_id']));
+        $attribute = array();
+        foreach ($data['attribute'] as $attr) {
+            $attribute[$attr['attr_name']] = $attr['attr_value'];
+        }
+        $data['attribute'] = json_encode($attribute);
+        $salesInfView = new SalesInformationEditView();
+        $salesInfView->render($data);
     }
 
     public function saveData() {
@@ -61,6 +71,9 @@ class SalesInformationController {
                     $extension = 'gif';
                 } elseif (strpos($type, 'image/webp') !== false) {
                     $extension = 'webp';
+                } else {
+                    array_push($data, $value);
+                    continue;
                 }
                 $datetime = new DateTime();
                 $datetime_string = $datetime->format('Y-m-d H:i:s');

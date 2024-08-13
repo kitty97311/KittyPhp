@@ -415,11 +415,11 @@ class SalesInformationAddView {
         </body>
         <script>
 
-            var jsonAttr = JSON.parse('<?php echo $attribute;?>')
-            var maxInputCount = []
-            var productId = <?php echo $product_id;?>
+            var jsonAttr = JSON.parse('<?php echo $attribute;?>');
+            var maxInputCount = [];
+            var productId = <?php echo $product_id;?>;
 
-            togglePanel()
+            // togglePanel()
 
             function saveAll() {
                 catchData().then(result => {
@@ -621,7 +621,9 @@ class SalesInformationAddView {
                 const title = e.closest('.variation_section').getElementsByClassName('variation_title')[0].innerHTML;
                 var dropdown = "";
                 jsonAttr[title].split(';').forEach(element => {
-                    if (element.toLowerCase().includes(e.value.toLowerCase())) {
+                    if (element == e.value) {
+                        dropdown = "";
+                    } else if (element.toLowerCase().includes(e.value.toLowerCase())) {
                         dropdown += "<a class=\"dropdown-item\" onclick=\"selectAttribute(this)\">" + element + "</a>"
                     }
                 });

@@ -6,6 +6,7 @@ class SalesInformationEditView {
         $product = $data['product'];
         $variation = $product['variation'];
         $attribute = $data['attribute'];
+        $sales_info = $data['sales_info'];
         ?>
         <!DOCTYPE html>
         <html lang="en">
@@ -415,11 +416,41 @@ class SalesInformationEditView {
         </body>
         <script>
 
-            var jsonAttr = JSON.parse('<?php echo $attribute;?>')
-            var maxInputCount = []
-            var productId = <?php echo $product_id;?>
+            var jsonAttr = JSON.parse('<?php echo $attribute;?>');
+            var maxInputCount = [];
+            var productId = <?php echo $product_id;?>;
+            // togglePanel()
 
-            togglePanel()
+            // Editing
+            var jsonSalesInfo = JSON.parse('<?php echo $sales_info;?>');
+            var variations = jsonSalesInfo[0]['variation_type'].split(';');
+            maxInputCount[variations[0]] = jsonSalesInfo.length;
+            maxInputCount[variations[1]] = 0;
+            selectVariation($('a[data-value="' + variations[0] + '"]')[0]);
+            selectVariation($('a[data-value="' + variations[1] + '"]')[0]);
+            var iterNum = 0;
+            for (var i = 0; i < jsonSalesInfo.length; i ++) {
+                var item = jsonSalesInfo[i];
+                var inputSection = $('.variation_section:nth-child(2) .input_section:nth-child(' + (i + 1) + ')');
+                var textInput = inputSection.find('input[type="text"]');
+                var fileInput = inputSection.find('input[type="file"]');
+                textInput.val(item['variation_name']);
+                changeVariationValue(textInput[0]);
+                fakeUploadImage(fileInput[0], item['variation_img']);
+                var subSalesInfo = item['sales_info'];
+                var k = 0;
+                for (const key in subSalesInfo) {
+                    var subInputSection = $('.variation_section:nth-child(3) .input_section:nth-child(' + ++ k + ')');
+                    var subTextInput = subInputSection.find('input[type="text"]');
+                    subTextInput.val(key.replace('_', ''));
+                    changeVariationValue(subTextInput[0]);
+                    var tr = $('.variation_table > tbody > tr:nth-child(' + ++ iterNum + ')');
+                    tr.find('.price').val(subSalesInfo[key].split(';')[0]);
+                    tr.find('.stock').val(subSalesInfo[key].split(';')[1]);
+                    tr.find('.sku').val(subSalesInfo[key].split(';')[2]);
+                    maxInputCount[variations[1]] = maxInputCount[variations[1]] > k ? maxInputCount[variations[1]] : k;
+                }
+            }
 
             function saveAll() {
                 catchData().then(result => {
@@ -546,6 +577,18 @@ class SalesInformationEditView {
                 }
             };
 
+            function fakeUploadImage(e, link) {
+                const uploadIcon = e.parentNode.getElementsByTagName('i')[0];
+                const uploadedImage = e.parentNode.getElementsByTagName('img')[0];
+                uploadedImage.setAttribute('src', link);
+                uploadedImage.style.display = 'block';
+                uploadIcon.style.display = 'none';
+                const title = $(e).closest('.variation_section').find('.variation_title').attr('variation_title');
+                const index = parseInt(($(e).closest('label').attr('for') + "").replace('image_upload_', ''));
+                $('.variation_table > tbody > tr > td > img').eq(index).removeClass('d-none');
+                $('.variation_table > tbody > tr > td > img').eq(index).attr('src', link);
+            };
+
             function selectVariation(e) {
                 var title = e.getAttribute('data-value');
                 maxInputCount[title] = 0;
@@ -621,7 +664,9 @@ class SalesInformationEditView {
                 const title = e.closest('.variation_section').getElementsByClassName('variation_title')[0].innerHTML;
                 var dropdown = "";
                 jsonAttr[title].split(';').forEach(element => {
-                    if (element.toLowerCase().includes(e.value.toLowerCase())) {
+                    if (element == e.value) {
+                        dropdown = "";
+                    } else if (element.toLowerCase().includes(e.value.toLowerCase())) {
                         dropdown += "<a class=\"dropdown-item\" onclick=\"selectAttribute(this)\">" + element + "</a>"
                     }
                 });
