@@ -3,15 +3,15 @@
 
  Source Server         : KittySQL
  Source Server Type    : MySQL
- Source Server Version : 100138
+ Source Server Version : 100432
  Source Host           : localhost:3306
  Source Schema         : shopee
 
  Target Server Type    : MySQL
- Target Server Version : 100138
+ Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 07/08/2024 11:43:58
+ Date: 01/10/2024 16:05:36
 */
 
 SET NAMES utf8mb4;
@@ -51,5 +51,24 @@ CREATE TABLE `tbl_product`  (
 -- Records of tbl_product
 -- ----------------------------
 INSERT INTO `tbl_product` VALUES (501, 'Jeans', 'Color;Size;Sex');
+
+-- ----------------------------
+-- Table structure for tbl_sales_info
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_sales_info`;
+CREATE TABLE `tbl_sales_info`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) NULL DEFAULT NULL,
+  `variation_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `variation_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `variation_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `sales_info` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tbl_sales_info
+-- ----------------------------
+INSERT INTO `tbl_sales_info` VALUES (1, 501, 'Color;Size', 'asdf', 'images/39d3bdc38dc6d316542fdbb26e0da54a.jpg', '{\"_asdf\":\"23;4234;234\"}');
 
 SET FOREIGN_KEY_CHECKS = 1;
